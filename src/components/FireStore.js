@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { app, db } from '../Firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
 
 
 export default function App() {
@@ -9,6 +9,11 @@ export default function App() {
         email: '',
         password: ''
     })
+
+    useEffect(() => {
+        handleGetDocs();
+    }, [])
+
 
     const handleInputChange = (e) => {
         let { name, value } = e.target;
@@ -26,29 +31,45 @@ export default function App() {
                 email: data.email
             }
             )
+            console.log("Document Added");
         }
         catch (err) {
             console.log(err);
         }
     }
     const handleGetDocs = async (e) => {
-        e.preventDefault();
-        try{
-            let res=await getDocs(collectionRef);
-            console.log(res.docs.map(item=>{
-                return item.data();
-            }));
+        try {
+            // let res = await getDocs(collectionRef);
+            // console.log(res.docs.map(item => {
+            //     return item.data();
+            // }));
+            onSnapshot(collectionRef, data => {
+                (data.docs.map(item => {
+                    console.log(item.data());
+                }));
+            })
         }
-        catch(e){
+        catch (e) {
             console.log(e);
         }
     }
+    const handleQueryData=()=>{
+        const mailQuery=query(collectionRef,where('email','==','fadfa@gmail.com'));
+        onSnapshot(mailQuery, data => {
+            (data.docs.map(item => {
+                console.log(item.data());
+            }));
+        })
+
+    }
     return (
-        <form onSubmit={handleFormSubmit}>
+        <div onSubmit={handleFormSubmit}>
             <input onChange={handleInputChange} type="email" name='email' placeholder='Enter Your Email' />
             <input onChange={handleInputChange} type="password" name="password" placeholder='Enter Your password' />
             <button onClick={handleFormSubmit}>Submit</button>
             <button onClick={handleGetDocs}>GetDocs</button>
-        </form>
+
+            <button onClick={handleQueryData}>Query Data</button>
+        </div>
     )
 }
