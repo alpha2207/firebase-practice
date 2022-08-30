@@ -58,6 +58,7 @@ export default function App() {
         onSnapshot(mailQuery, data => {
             (data.docs.map(item => {
                 console.log(item.data());
+                return item;
             }));
         })
 
@@ -69,7 +70,7 @@ export default function App() {
             <button onClick={handleFormSubmit}>Submit</button>
             <button onClick={handleGetDocs}>GetDocs</button>
 
-            <button onClick={handleQueryData}>Query Data</button>
+            <button onClick={handleQueryData}>FireStore Query Data</button>
         </div>
     )
 }
